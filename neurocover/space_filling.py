@@ -1,94 +1,11 @@
 import numpy
-import rtree
 from itertools import izip
 import neurom
 import matplotlib.pyplot as plt
 from collections import namedtuple
-from scipy.spatial import cKDTree
 
 import numpy as np
-from matplotlib import pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from mpl_toolkits.mplot3d.art3d import Line3DCollection
 import matplotlib.animation
-
-def AABB_sphere(center, radius):
-    ''' Returns the bounding box of a sphere given its center and radius.
-    (xmin, ymin, zmin, xmax, ymax, zmax)
-    '''
-    return (center[0] - radius, center[1] - radius, center[2] - radius,
-            center[0] + radius, center[1] + radius, center[2] + radius)
-
-def AABB_tapered_capsule(cap1_center, cap2_center, cap1_radius, cap2_radius):
-
-    xmin1, ymin1, zmin1, xmax1, ymax1, zmax1 = AABB_sphere(cap1_center, cap1_radius)
-    xmin2, ymin2, zmin2, xmax2, ymax2, zmax2 = AABB_sphere(cap2_center, cap2_radius)
-
-    return (min(xmin1, xmin2),
-            min(ymin1, ymin2),
-            min(zmin1, zmin2),
-            max(xmax1, xmax2),
-            max(ymax1, ymax2),
-            max(zmax1, zmax2))
-
-def _bulk_loader_generator_tapered_capsules(p0s, p1s, r0s, r1s):
-
-    for n, (p0, p1, r0, r1) in enumerate(izip(p0s, p1s, r0s, r1s)):
-        yield (n, AABB_tapered_capsule(p0, p1, r0, r1), (p0, p1, r0, r1))
-
-def _make_property(dims):
-
-    p = rtree.index.Property()
-
-    p.dimension=dims
-
-    return p
-
-def spatial_index(p0s, p1s, r0s, r1s):
-
-    p = _make_property(3)
-
-    gen_data = _bulk_loader_generator_tapered_capsules(p0s, p1s, r0s, r1s)
-
-    index = rtree.index.Index(gen_data, properties=p)
-
-    return index
-
-
-def vector_projection(vectors1, vectors2):
-    """ a . b * b / (|b| . |b|)
-    """
-    ab = numpy.sum(vectors1 * vectors2, axis=1)
-    bb = numpy.sum(vectors2 * vectors2, axis=1)
-    return  (ab / bb)[:, numpy.newaxis] * vectors2 
-
-def rowwise_dot(vectors1, vectors2):
-
-    return np.sum(vectors1 * vectors2, axis=1)
-
-def closest_edges_to_points(starts, ends, points):
-
-    edge_centers = 0.5 * (ends + starts)
-
-    t = cKDTree(edge_centers)
-
-    return t.query(points)
-
-
-def distance_point_to_edge(points, edge_starts, edge_ends):
-
-    ABs = edge_ends - edge_starts
-    APs = points - edge_starts
-    BPs = points - edge_ends
-
-    cprod = numpy.cross(APs, ABs)
-
-    distx =  numpy.linalg.norm(cprod, axis=1) / numpy.linalg.norm(ABs, axis=1)
-
-    mask = (rowwise_dot(APs, ABs) <= 0.) | (rowwise_dot(BPs, ABs) >= 0.)
-    distx[mask] = np.inf
-
-    return distx
 
 def is_inside(node_data, edges, sample_points, inflation_coefficient):
 
