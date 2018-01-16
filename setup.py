@@ -2,12 +2,10 @@
 
 import os
 import glob
-import numpy
 
 
 from pip.req import parse_requirements
 from setuptools import find_packages, setup, Extension
-from Cython.Build import cythonize
 
 
 NAME='neurocover'
@@ -30,18 +28,6 @@ def scandir(directory, files=[]):
     return files
 
 
-def make_extensions(cwd):
-
-    extensions = []
-
-    file_paths = scandir(cwd)
-    for fpath in file_paths:
-         dpath = fpath.replace(os.path.sep, '.')[:-4]
-         extension = Extension(dpath, [fpath], include_dirs=[numpy.get_include()])
-         extensions.append(extension)
-    return extensions
-
-
 setup(
     classifiers=[
         'Programming Language :: Python :: 2.7',
@@ -51,10 +37,8 @@ setup(
       description='Neruon Cover scripts',
       author='Eleftherios Zisis',
       author_email='eleftherios.zisis@epfl.ch',
-      #install_requires=reqs,
       packages=find_packages(),
-      include_dirs=[numpy.get_include()],
-      ext_modules=cythonize(make_extensions(NAME)),
+      scripts=['apps/create_covering_animation.py'],
       include_package_data=True,
       test_suite='nose.collector',
       tests_require=['nose']

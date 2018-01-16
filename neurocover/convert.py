@@ -1,10 +1,7 @@
 import numpy
-import neurom
 
 
-def load_morphology(filepath):
-
-    neuron = neurom.load_neuron(filepath)
+def morphology(neuron):
 
     pdata = []
     edges = []
