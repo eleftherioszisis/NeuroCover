@@ -44,7 +44,7 @@ def data_generator2(node_data, edges, sample_points, dstep):
 
         idx_out = idx[~mask_inside]
 
-        mask_idx_in = neurocover.math.is_inside(node_data, edges, sample_points[idx_out], inflation_coefficient)
+        mask_idx_in = neurocover.math.is_inside2(node_data, edges, sample_points[idx_out], inflation_coefficient)
 
         mask_inside[idx_out[mask_idx_in]] = True
 
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     N = 100000
 
-    sample_points = neurocover.point_generators.sobol(N, bb_point_min, bb_point_max)
+    sample_points = neurocover.point_generators.uniform(N, bb_point_min, bb_point_max)
 
     dstep = 1.
 
