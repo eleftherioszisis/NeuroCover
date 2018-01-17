@@ -6,15 +6,15 @@ def morphology(neuron):
     pdata = []
     edges = []
 
-    for neurite in neuron.neurites:
+    for section in neuron.sections:
 
-        neurite_points = neurite.points.tolist()
+        section_points = section.points.tolist()
 
         N = len(pdata)
 
-        neurite_edges = [[i, i + 1] for i in xrange(N, len(neurite_points) + N - 1)]
+        neurite_edges = [[i, i + 1] for i in xrange(N, len(section_points) + N - 1)]
 
-        pdata.extend(neurite_points)
+        pdata.extend(section_points)
         edges.extend(neurite_edges)
 
     return numpy.asarray(pdata), numpy.asarray(edges)

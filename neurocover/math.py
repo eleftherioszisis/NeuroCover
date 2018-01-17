@@ -75,8 +75,8 @@ def is_inside2(node_data, edges, sample_points, inflation_coefficient):
     starts = points[edges[:, 0]]
     ends = points[edges[:, 1]]
 
-    radii_starts = radii[edges[:, 0]]
-    radii_ends = radii[edges[:, 1]]
+    radii_starts = radii[edges[:, 0]] * (1. + inflation_coefficient)
+    radii_ends = radii[edges[:, 1]] * (1. + inflation_coefficient)
 
     edge_vectors = ends - starts
     edge_radii = 0.5 * (radii_starts + radii_ends)
@@ -84,9 +84,7 @@ def is_inside2(node_data, edges, sample_points, inflation_coefficient):
     mask = numpy.zeros(len(sample_points), dtype=numpy.bool)
 
     edge_lengths_squared = rowwise_dot(edge_vectors, edge_vectors) ** 2
-
-    factor = (1. + inflation_coefficient) 
-    factor_radii_squared = (factor * edge_radii) ** 2
+    factor_radii_squared = edge_radii ** 2
 
     bbs = vectorized_AABB_tapered_capsule(starts, ends, radii_starts, radii_ends)
 
@@ -96,6 +94,7 @@ def is_inside2(node_data, edges, sample_points, inflation_coefficient):
     for n in xrange(len(edges)):
 
         xmin, ymin, zmin, xmax, ymax, zmax = bbs[n]
+
         pidx = idx[~mask_inside]
 
         # point inside bb
@@ -125,6 +124,8 @@ def is_inside2(node_data, edges, sample_points, inflation_coefficient):
             continue
 
         pidx = pidx[mask_in]
+
+        APs = sample_points[pidx] - starts[n]
 
         projs = (vectorized_dot_product(edge_vectors[n], APs) / edge_lengths_squared[n])[:, numpy.newaxis] * edge_vectors[n]
 

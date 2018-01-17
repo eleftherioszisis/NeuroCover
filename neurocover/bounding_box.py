@@ -23,28 +23,23 @@ def AABB_tapered_capsule(cap1_center, cap2_center, cap1_radius, cap2_radius):
 
 def vectorized_AABB_sphere(centers, radii):
 
-    A = numpy.empty((len(centers), 6))
-
     expanded_radii = numpy.tile(radii, (3, 1)).T
 
-    A[:, (0, 1, 2)] = centers - expanded_radii
-    A[:, (3, 4, 5)] = centers + expanded_radii
-
-    return A
+    return centers - expanded_radii, centers + expanded_radii
 
 
 def vectorized_AABB_tapered_capsule(cap1_centers, cap2_centers, cap1_radii, cap2_radii):
 
-    C1 = vectorized_AABB_sphere(cap1_centers, cap1_radii)
-    C2 = vectorized_AABB_sphere(cap2_centers, cap2_radii)
+    C1_min, C1_max = vectorized_AABB_sphere(cap1_centers, cap1_radii)
+    C2_min, C2_max = vectorized_AABB_sphere(cap2_centers, cap2_radii)
 
     A = numpy.empty((len(cap1_centers), 6))
 
-    A[:, 0] = numpy.min((C1[:, 0], C2[:, 0]), axis=0)
-    A[:, 1] = numpy.min((C1[:, 1], C2[:, 1]), axis=0)
-    A[:, 2] = numpy.min((C1[:, 2], C2[:, 2]), axis=0)
-    A[:, 3] = numpy.max((C1[:, 0], C2[:, 0]), axis=0)
-    A[:, 4] = numpy.max((C1[:, 1], C2[:, 1]), axis=0)
-    A[:, 5] = numpy.max((C1[:, 2], C2[:, 2]), axis=0)
+    A[:, 0] = numpy.min((C1_min[:, 0], C2_min[:, 0]), axis=0)
+    A[:, 1] = numpy.min((C1_min[:, 1], C2_min[:, 1]), axis=0)
+    A[:, 2] = numpy.min((C1_min[:, 2], C2_min[:, 2]), axis=0)
+    A[:, 3] = numpy.max((C1_max[:, 0], C2_max[:, 0]), axis=0)
+    A[:, 4] = numpy.max((C1_max[:, 1], C2_max[:, 1]), axis=0)
+    A[:, 5] = numpy.max((C1_max[:, 2], C2_max[:, 2]), axis=0)
 
     return A

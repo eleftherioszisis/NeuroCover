@@ -47,11 +47,15 @@ def space_filling_inflation(results, node_data, edges, bb_point_min, bb_point_ma
 
 
     ax1.add_collection3d(lc)
+
     line,  = ax2.plot(results[0][1], results[0][2], color='k')
 
     ani = matplotlib.animation.FuncAnimation(fig, update_graph, frames=range(0, xmax), blit=True)
     #Writer = matplotlib.animation.writers['ffmpeg']
-    Writer = matplotlib.animation.writers['avconv']
+    try:
+        Writer = matplotlib.animation.writers['avconv']
+    except:
+        Writer = matplotlib.animation.writers['ffmpeg']
     writer = Writer(fps=10, metadata=dict(artist='Me'), bitrate=2000)
 
     ani.save(out_file, writer=writer)

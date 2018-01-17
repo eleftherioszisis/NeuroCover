@@ -1,11 +1,13 @@
 apps/create_covering_animation.py
 neurocover/__init__.py
 neurocover/animation.py
+neurocover/bounding_box.py
 neurocover/convert.py
 neurocover/math.py
+neurocover/parallel.py
 neurocover/plot.py
 neurocover/point_generators.py
-neurocover/space_filling.py
+neurocover/spatial.py
 neurocover.egg-info/PKG-INFO
 neurocover.egg-info/SOURCES.txt
 neurocover.egg-info/dependency_links.txt
