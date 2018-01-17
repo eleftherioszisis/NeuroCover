@@ -3,6 +3,7 @@ neurocover/__init__.py
 neurocover/animation.py
 neurocover/bounding_box.py
 neurocover/convert.py
+neurocover/distance.py
 neurocover/math.py
 neurocover/parallel.py
 neurocover/plot.py

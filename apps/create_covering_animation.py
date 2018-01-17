@@ -5,6 +5,7 @@ import neurom
 import neurom.geom
 import neurocover
 import neurocover.math
+import neurocover.spatial
 import neurocover.convert
 import neurocover.animation
 import neurocover.point_generators
@@ -13,22 +14,6 @@ import neurocover.point_generators
 logging.basicConfig(level=logging.INFO)
 
 L = logging.getLogger(__name__)
-
-def data_generator(node_data, edges, sample_points, dstep):
-
-    inflation_coefficient = 0.
-
-    percentage = 0.
-
-    while abs(percentage - 1.0) > 0.01:
-
-        mask = neurocover.math.is_inside(node_data, edges, sample_points, inflation_coefficient)
-
-        percentage = float(mask.sum()) / float(N)
-
-        yield sample_points[mask], inflation_coefficient, percentage
-
-        inflation_coefficient += dstep
 
 
 def data_generator2(node_data, edges, sample_points, dstep):
@@ -44,7 +29,7 @@ def data_generator2(node_data, edges, sample_points, dstep):
 
         idx_out = idx[~mask_inside]
 
-        mask_idx_in = neurocover.math.is_inside2(node_data, edges, sample_points[idx_out], inflation_coefficient)
+        mask_idx_in = neurocover.spatial.is_inside(node_data, edges, sample_points[idx_out], inflation_coefficient)
 
         mask_inside[idx_out[mask_idx_in]] = True
 
