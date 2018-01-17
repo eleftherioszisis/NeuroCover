@@ -4,10 +4,13 @@ import logging
 import neurom
 import neurom.geom
 import scipy.spatial
+import matplotlib.pylab
+
 import neurocover
 import neurocover.math
 import neurocover.spatial
 import neurocover.convert
+import neurocover.parallel
 import neurocover.animation
 import neurocover.point_generators
 
@@ -43,20 +46,16 @@ def data_generator(node_data, edges, sample_points, dstep):
         percentage = float(mask_inside.sum()) / float(N)
 
         L.info('{0}, {1}'.format(inflation_coefficient, percentage))
-        yield sample_points[mask_inside], inflation_coefficient, percentage
+        yield inflation_coefficient, percentage
 
         inflation_coefficient += dstep
 
 
-if __name__ == '__main__':
+def apply_to_morphology(morphology):
 
-    filename = sys.argv[1]
+    node_data, edges = neurocover.convert.morphology(morphology)
 
-    neuron = neurom.load_neuron(filename)
-
-    node_data, edges = neurocover.convert.morphology(neuron)
-
-    bb_point_min, bb_point_max = neurom.geom.bounding_box(neuron)
+    bb_point_min, bb_point_max = neurom.geom.bounding_box(morphology)
 
     N = 200000
 
@@ -68,8 +67,32 @@ if __name__ == '__main__':
 
     dstep = 1.
 
-    it = data_generator(node_data, edges, sample_points, dstep)
+    results = list(data_generator(node_data, edges, sample_points, dstep))
 
-    results = list(it)
+    return numpy.asarray(results)
 
-    neurocover.animation.space_filling_inflation(results, node_data, edges, bb_point_min, bb_point_max, out_file='test.mp4')
+if __name__ == '__main__':
+
+    dirpath = sys.argv[1]
+
+    population = neurom.load_neurons(dirpath)
+
+    results_list = neurocover.parallel.multiprocessing_map(apply_to_morphology, population)
+
+    f, ax = matplotlib.pylab.subplots(1,2)
+
+    for i, morphology in enumerate(population):
+
+        name = morphology.name
+
+        coeffs, percs = results_list[i].T
+
+        ax[0].plot(coeffs, percs, label=name)
+        ax[0].legend()
+        dstep = 1.
+        dpercs = (percs[1:-1] - percs[:-2]) / (2. * dstep)
+        ax[1].plot(coeffs[1:-1], dpercs)
+
+
+    matplotlib.pylab.show()
+

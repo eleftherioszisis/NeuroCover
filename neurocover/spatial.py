@@ -1,4 +1,5 @@
 import numpy
+import scipy.spatial
 from .bounding_box import vectorized_AABB_tapered_capsule
 from .distance import points_to_segment
 
@@ -8,6 +9,13 @@ def is_point_inside_segment_bb(point, seg_start, seg_end, seg_start_r, seg_end_r
     xmin, ymin, zmin, xmax, ymax, zmax = AABB_tapered_capsule(seg_start, seg_end, seg_start_r, seg_end_r)
 
     return xmin <= point[0] <= xmax and ymin <= point[1] <= ymax and zmin <= point[2] <= zmax
+
+
+def points_inside_convex_hull(points, convex_hull):
+
+    dl = scipy.spatial.Delaunay(convex_hull.points[convex_hull.vertices])
+
+    return dl.find_simplex(points) >= 0
 
 
 def points_inside_capsule(points, p0, p1, r0, r1):
@@ -21,7 +29,9 @@ def points_inside_capsule(points, p0, p1, r0, r1):
 
 
 def is_inside(node_data, edges, sample_points, inflation_coefficient):
-
+    """ Given the node_data and edges for segments it checks which
+    sample points are inside inflated by the coefficient
+    """
     points = node_data[:, (0, 1, 2)]
     radii = node_data[:, 3] * (1. + inflation_coefficient)
 

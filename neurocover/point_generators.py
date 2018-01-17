@@ -12,17 +12,10 @@ def scale(sample_points, pmin, pmax):
 
     return sample_points
 
+
 def uniform(number_of_points, pmin, pmax):
 
 
     sample_points = numpy.random.random(size=(number_of_points, 3))
-
-    return scale(sample_points, pmin, pmax)
-
-
-def sobol(number_of_points, pmin, pmax):
-    import sobol_seq
-
-    sample_points = sobol_seq.i4_sobol_generate(3, number_of_points)
 
     return scale(sample_points, pmin, pmax)
