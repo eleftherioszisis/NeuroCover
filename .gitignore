@@ -2,5 +2,5 @@
 
 *.pyc
 *.mp4
-
+*egg-info
 .DS_Store
