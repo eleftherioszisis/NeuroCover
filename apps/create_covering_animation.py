@@ -55,10 +55,14 @@ if __name__ == '__main__':
         output = sys.argv[2]
     else:
         output = 'test.mp4'
+    if len(sys.argv) > 3:
+        neurite_type = getattr(neurom.NeuriteType, sys.argv[3])
+    else:
+        neurite_type = neurom.NeuriteType.basal_dendrite
 
     neuron = neurom.load_neuron(filename)
 
-    node_data, edges = neurocover.convert.morphology(neuron)
+    node_data, edges = neurocover.convert.morphology(neuron, neurite_type=neurite_type)
 
     bb_point_min, bb_point_max = neurom.geom.bounding_box(neuron)
 
