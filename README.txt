@@ -26,6 +26,6 @@ Installation
 # Create virtual environment
 virtualenv venv
 # Activate venv
-. ./venv
+. ./venv/bin/activate
 # Pip install package with dependencies
 pip install -e NeuroCover
