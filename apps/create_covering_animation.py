@@ -51,6 +51,10 @@ def data_generator(node_data, edges, sample_points, dstep):
 if __name__ == '__main__':
 
     filename = sys.argv[1]
+    if len(sys.argv) > 2:
+        output = sys.argv[2]
+    else:
+        output = 'test.mp4'
 
     neuron = neurom.load_neuron(filename)
 
@@ -72,4 +76,4 @@ if __name__ == '__main__':
 
     results = list(it)
 
-    neurocover.animation.space_filling_inflation(results, node_data, edges, bb_point_min, bb_point_max, out_file='test.mp4')
+    neurocover.animation.space_filling_inflation(results, node_data, edges, bb_point_min, bb_point_max, out_file=output)
