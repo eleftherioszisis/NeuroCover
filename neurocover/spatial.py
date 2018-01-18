@@ -33,7 +33,7 @@ def is_inside(node_data, edges, sample_points, inflation_coefficient):
     sample points are inside inflated by the coefficient
     """
     points = node_data[:, (0, 1, 2)]
-    radii = node_data[:, 3] * (1. + inflation_coefficient)
+    radii = node_data[:, 3] + inflation_coefficient
 
     starts = points[edges[:, 0]]
     ends = points[edges[:, 1]]
