@@ -33,14 +33,15 @@ def points_inside_cylinder(points, p0, p1, r0, r1):
     seg_vector = p1 - p0
     pnt_vectors = points - p0
 
-    dots = vectorized_dot(pnt_vectors, seg_vector)
+    dots = vectorized_dot(seg_vector, pnt_vectors)
 
-    seg_length_sq = numpy.dot(seg_vector)
+    seg_length_sq = numpy.dot(seg_vector, seg_vector)
 
     return points_inside_capsule(points, p0, p1, r0, r1) & (dots >= 0.) & (dots <= seg_length_sq)
 
 
-def is_inside(node_data, edges, sample_points, inflation_coefficient, inclusion_func=points_inside_capsule):
+def is_inside(node_data, edges, sample_points, inflation_coefficient,
+              inclusion_func=points_inside_capsule):
     """ Given the node_data and edges for segments it checks which
     sample points are inside inflated by the coefficient
     """
@@ -59,6 +60,7 @@ def is_inside(node_data, edges, sample_points, inflation_coefficient, inclusion_
 
     mask_inside = numpy.zeros(len(sample_points), dtype=numpy.bool)
     idx = numpy.arange(len(sample_points), dtype=numpy.int)
+
 
     for n in xrange(len(edges)):
 
@@ -85,4 +87,46 @@ def is_inside(node_data, edges, sample_points, inflation_coefficient, inclusion_
 
         mask_inside[pidx] = True
 
-    return mask_inside
+        return mask_inside
+
+
+def ownership(node_data, edges, sample_points, inclusion_func=points_inside_capsule):
+    points = node_data[:, (0, 1, 2)]
+    radii = node_data[:, 3]
+
+    starts = points[edges[:, 0]]
+    ends = points[edges[:, 1]]
+
+    radii_starts = radii[edges[:, 0]]
+    radii_ends = radii[edges[:, 1]]
+
+    bbs = vectorized_AABB_tapered_capsule(starts, ends, radii_starts, radii_ends)
+
+    own = [numpy.zeros(len(sample_points), dtype=numpy.bool) for _ in xrange(len(edges))]
+    idx = numpy.arange(len(sample_points), dtype=numpy.int)
+    for n in xrange(len(edges)):
+
+        xmin, ymin, zmin, xmax, ymax, zmax = bbs[n]
+
+        pidx = idx
+
+        # find points inside edge bounding box
+        mask = (xmin <= sample_points[pidx, 0]) & (sample_points[pidx, 0] <= xmax) & \
+               (ymin <= sample_points[pidx, 1]) & (sample_points[pidx, 1] <= ymax) & \
+               (zmin <= sample_points[pidx, 2]) & (sample_points[pidx, 2] <= zmax)
+
+        if not mask.any():
+            continue
+
+        pidx = pidx[mask]
+
+        mask_in = inclusion_func(sample_points[pidx], starts[n], ends[n], radii_starts[n], radii_ends[n])
+
+        if not mask_in.any():
+            continue
+
+        pidx = pidx[mask_in]
+
+        own[n][pidx] = True
+
+    return own
