@@ -2,7 +2,7 @@ import numpy
 import scipy.spatial
 from .bounding_box import vectorized_AABB_tapered_capsule
 from .distance import points_to_segment
-
+from .math import vectorized_dot, rowwise_dot
 
 def is_point_inside_segment_bb(point, seg_start, seg_end, seg_start_r, seg_end_r):
 
@@ -26,6 +26,18 @@ def points_inside_capsule(points, p0, p1, r0, r1):
     r_ts = r0  + (r1 - r0) * ts
 
     return (distx < r_ts) & ~numpy.isclose(distx, r_ts)
+
+
+def points_inside_cylinder(points, p0, p1, r0, r1):
+
+    seg_vector = p1 - p0
+    pnt_vectors = points - p0
+
+    dots = vectorized_dot(pnt_vectors, seg_vector)
+
+    seg_length_sq = numpy.dot(seg_vector)
+
+    return points_inside_capsule(points, p0, p1, r0, r1) & (dots >= 0.) & (dots <= seg_length_sq)
 
 
 def is_inside(node_data, edges, sample_points, inflation_coefficient):
