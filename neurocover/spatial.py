@@ -40,7 +40,7 @@ def points_inside_cylinder(points, p0, p1, r0, r1):
     return points_inside_capsule(points, p0, p1, r0, r1) & (dots >= 0.) & (dots <= seg_length_sq)
 
 
-def is_inside(node_data, edges, sample_points, inflation_coefficient):
+def is_inside(node_data, edges, sample_points, inflation_coefficient, inclusion_func=points_inside_capsule):
     """ Given the node_data and edges for segments it checks which
     sample points are inside inflated by the coefficient
     """
@@ -76,7 +76,7 @@ def is_inside(node_data, edges, sample_points, inflation_coefficient):
 
         pidx = pidx[mask]
 
-        mask_in = points_inside_capsule(sample_points[pidx], starts[n], ends[n], radii_starts[n], radii_ends[n])
+        mask_in = inclusion_func(sample_points[pidx], starts[n], ends[n], radii_starts[n], radii_ends[n])
 
         if not mask_in.any():
             continue
