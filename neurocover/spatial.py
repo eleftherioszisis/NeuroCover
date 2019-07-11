@@ -45,7 +45,7 @@ def is_inside(node_data, edges, sample_points, inflation_coefficient,
     """ Given the node_data and edges for segments it checks which
     sample points are inside inflated by the coefficient
     """
-    points = node_data[:, (0, 1, 2)]
+    points = node_data[:, :3]
     radii = node_data[:, 3] + inflation_coefficient
 
     starts = points[edges[:, 0]]
