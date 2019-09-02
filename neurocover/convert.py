@@ -3,7 +3,7 @@ import neurom as nm
 from neurom.core import iter_sections
 
 
-def morphology(neuron, neurite_type=None):
+def morphology(neuron, neurite_type=None, reset_radii=True):
 
     pdata = []
     edges = []
@@ -15,7 +15,12 @@ def morphology(neuron, neurite_type=None):
 
     for section in it:
 
-        section_points = section.points.tolist()
+        section_points = section.points[:, :4]
+
+        if reset_radii:
+            section_points[:, 3] = 0.01
+
+        section_points = section_points.tolist()
 
         N = len(pdata)
 

@@ -62,7 +62,7 @@ def is_inside(node_data, edges, sample_points, inflation_coefficient,
     idx = numpy.arange(len(sample_points), dtype=numpy.int)
 
 
-    for n in xrange(len(edges)):
+    for n in range(len(edges)):
 
         xmin, ymin, zmin, xmax, ymax, zmax = bbs[n]
 
@@ -102,9 +102,9 @@ def ownership(node_data, edges, sample_points, inclusion_func=points_inside_caps
 
     bbs = vectorized_AABB_tapered_capsule(starts, ends, radii_starts, radii_ends)
 
-    own = [numpy.zeros(len(sample_points), dtype=numpy.bool) for _ in xrange(len(edges))]
+    own = [numpy.zeros(len(sample_points), dtype=numpy.bool) for _ in range(len(edges))]
     idx = numpy.arange(len(sample_points), dtype=numpy.int)
-    for n in xrange(len(edges)):
+    for n in range(len(edges)):
 
         xmin, ymin, zmin, xmax, ymax, zmax = bbs[n]
 
